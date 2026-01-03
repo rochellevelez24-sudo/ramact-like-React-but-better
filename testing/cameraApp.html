@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera App</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        /* Style for the video element created by the class */
+        video {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            /* Ensure the video is visible and not set to display: none in the class's constructor */
+            display: block !important; 
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #recordButton {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #recordButton.recording {
+            background-color: #f44336;
+        }
+        #downloadButton {
+            background-color: #008CBA;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Webcam Recorder</h1>
+        <div id="video-container">
+            <!-- The video element will be appended here by JavaScript -->
+        </div>
+        <div>
+            <button id="recordButton">Start Recording</button>
+            <button id="downloadButton" style="display: none;" disabled>Save Recording (.webm)</button>
+        </div>
+        <!-- The canvas element will be appended here by JavaScript but kept hidden -->
+    </div>
+
+    <script>
+        // Import the Video class (assuming the previous code snippet was saved as 'video.ts' or similar)
+        // Adjust the path as necessary for your file structure
+        import { Video } from '../video/videoPlay.ts'; 
+
+        const videoApp = new Video();
+        const videoContainer = document.getElementById('video-container');
+        const recordButton = document.getElementById('recordButton');
+        const downloadButton = document.getElementById('downloadButton');
+
+        // Append the video and canvas elements created within the class to the DOM
+        videoContainer.appendChild(videoApp.video);
+        document.body.appendChild(videoApp.canvas); // Canvas remains hidden in the body
+
+        let isRecording = false;
+
+        recordButton.addEventListener('click', async () => {
+            if (!isRecording) {
+                try {
+                    await videoApp.start();
+                    isRecording = true;
+                    recordButton.textContent = 'Stop Recording';
+                    recordButton.classList.add('recording');
+                    downloadButton.style.display = 'none'; // Hide download button while recording
+                    downloadButton.disabled = true;
+                } catch (err) {
+                    console.error('Error starting camera or recording:', err);
+                    alert('Could not start camera. Please check permissions.');
+                }
+            } else {
+                videoApp.stopRecording();
+                isRecording = false;
+                recordButton.textContent = 'Start Recording';
+                recordButton.classList.remove('recording');
+                // Enable download button after stopping
+                downloadButton.style.display = 'inline-block';
+                downloadButton.disabled = false;
+            }
+        });
+
+        downloadButton.addEventListener('click', () => {
+            // Note: Use .webm for best browser compatibility with MediaRecorder output
+            videoApp.saveToFile(".webm"); 
+            downloadButton.disabled = true; // Disable until a new recording is made
+        });
+
+        // Ensure the video element is visible once the stream loads
+        videoApp.video.addEventListener('loadedmetadata', () => {
+            videoApp.video.style.display = 'block';
+        });
+
+    </script>
+</body>
+</html>
