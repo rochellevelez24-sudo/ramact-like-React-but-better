@@ -149,16 +149,16 @@ interface RamactPositionEditorWidget extends WidgetUI {
 🔧 System Interface
 
 # RamactWidgetRegistry
-
+```ts
 interface RamactWidgetRegistry {
   AnimationEditor: typeof RamactAnimationEditorWidget;
   ImageEditor: typeof RamactImageEditorWidget;
   PositionEditor: typeof RamactPositionEditorWidget;
   [key: string]: WidgetUI;
 }
-
+```
 # RamactToolRegistry
-
+```ts
 interface RamactToolRegistry {
   animation: Animation;
   inputex: RamactInputex;
@@ -166,7 +166,7 @@ interface RamactToolRegistry {
   feedbackex: RamactFeedbackex;
   [key: string]: unknown;
 }
-
+```
 # RamactSystemInterface
 
 ```ts
